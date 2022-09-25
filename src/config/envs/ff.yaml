@@ -1,0 +1,24 @@
+env: ff
+scenario: "2-5a_2-5b"
+
+env_args:
+  entity_scheme: True
+  episode_limit: 150
+  reward_scale: 20
+  end_on_any_burn: False
+  game_config:
+    init_fire_chance: 0.4  # chance that a building will be on fire to start
+    fire_burn_rate: 0.035  # rate at which fire burns building
+    fire_reduce_rate: 0.25  # rate at which agents reduce fires
+    fire_growth_rate: 1.1  # rate at which fire grows on its own
+    base_build_rate: 0.125  # rate at which agents can build
+    generalist_help_factor: 0.45  # how much generalists can help agents at their non-specialized capability
+
+multi_task: True
+
+test_nepisode: 160
+test_interval: 50000
+log_interval: 10000
+runner_log_interval: 10000
+learner_log_interval: 10000
+t_max: 15000000

@@ -1,0 +1,97 @@
+# --- Defaults ---
+
+# --- pymarl options ---
+runner: "episode" # Runs 1 env for an episode
+mac: "entity_mac" # Basic controller
+env: "sc2custom" # Environment name
+env_args: {} # Arguments for the environment
+batch_size_run: 1 # Number of environments to run in parallel
+test_nepisode: 20 # Number of episodes to test for
+test_interval: 2000 # Test after {} timesteps have passed
+test_greedy: True # Use greedy evaluation (if False, will set epsilon floor to 0
+log_interval: 2000 # Log summary of stats after every {} timesteps
+runner_log_interval: 2000 # Log runner stats (not test stats) every {} timesteps
+learner_log_interval: 2000 # Log training stats every {} timesteps
+t_max: 10000 # Stop running after this many timesteps
+use_cuda: True # Use gpu by default unless it isn't available
+buffer_cpu_only: False # If true we won't keep all of the replay buffer in vram
+buffer_opt_mem: True  # don't store padded trajectories (instead pad upon sampling)
+multi_task: False  # Whether env being used has multiple simultaneous tasks (for task allocation)
+
+# --- Logging options ---
+use_tensorboard: False # Log results to tensorboard
+save_model: False # Save the models to disk
+save_model_interval: 5000 # Save models after this many timesteps
+checkpoint_run_name: "" # Load a checkpoint from best model with this manually specified name in wandb
+pi_checkpoint_run_name: "" # If provided, load the action policies from a different model (use "same" to get a different seed from a model trained with the same config)
+checkpoint_unique_id: "" # Load a checkpoint from model with this unqiue assigned ID in wandb
+evaluate: False # Evaluate model for test_nepisode episodes and quit (no training)
+load_step: 0 # Load model trained on this many timesteps (0 if choose max possible)
+save_replay: False # Saving the replay of the model loaded from checkpoint_path
+video_path: # if path provided, save a video for evaluation runs
+fps: 2 # video frames per second
+tb_dirname: "tb_logs"
+eval_all_models: False  # if True and checkpoint_run_name is provided, will evaluate *all* models with that name, rather than the best one
+eval_all_scen: False  # if True, evaluate on each separate scenario and report performance individually, otherwise randomly sample and report average performance
+eval_sep: False  # if True, store results of each episode separately w/ subtask granularity (only works for multi-subtask tasks)
+eval_n_task_range: ""  # provide in the form "n-m" and will test separately on tasks w/ # of subtasks in range [n, m] inclusive.
+eval_path: # if path provided, save evaluation results here in json form
+
+# --- RL hyperparameters ---
+gamma: 0.99
+batch_size: 32 # Number of episodes to train on
+max_traj_len: 64  # truncates trajectories to maximum length (w/ random start point), -1 does not truncate.
+buffer_size: 32 # Size of the replay buffer
+lr: 0.0005 # Learning rate for agents
+optim_alpha: 0.99 # RMSProp alpha
+optim_eps: 0.00001 # RMSProp epsilon
+grad_norm_clip: 10 # Reduce magnitude of gradients above this L2 norm
+weight_decay: 0 # L2 penalty weight decay on agent parameters
+alloc_q_weight_decay: 0 # L2 penalty weight decay on agent parameters (specific to allocation Q-function)
+target_update_interval: 200
+alloc_target_update_interval: 50
+popart: True
+n_extra_units: 0
+n_extra_tasks: 0
+vi_lambda: 0.00005
+
+# --- Agent parameters ---
+agent:
+  recurrent: False
+  entity_scheme: False
+  imagine: False
+  subtask_cond: # None, options=['mask', 'full_obs'], method by which we condition agents on their subtask
+hier_agent:
+  task_allocation: # None, options=['heuristic', 'aql', 'random', 'random_fixed']
+  copa: False  # whether to use Coach-Player framework - code adapted from official https://github.com/Cranial-XIX/marl-copa
+  mask_copa: True  # whether to mask COPA when combined with task allocation
+  copa_vi_loss: True  # whether to train VI loss with COPA
+  action_length: 5  # max number of steps between high-level agent decisions
+  alloc_critic: 'standard'
+  alloc_policy: 'autoreg'
+  decay_old: 150000  # linearly decay weight of Q-loss for data up to this many timesteps old
+  n_proposals: 32
+  alloc_eps: '1.0-0.0-0.05'  # probability of random allocation (applied independently per agent)
+  prop_alloc_eps: '1.0-0.05-0.2'  # probability of sampling random *proposed* allocation
+  entropy_loss: 0.01
+  alloc_opt: 'rmsprop'
+  max_bs: 400  # max batch size for alloc training (lower action_length will result in higher batch size which may overflow memory)
+  pi_ag_attn: False
+  subtask_mask: True
+  sel_task_upd: True
+  pi_pointer_net: True
+  pi_autoreg: True
+
+mask_subtask_actions: False  # Whether to mask actions by whether they're available in the specific allocated subtasks
+rnn_hidden_dim: 64 # Size of hidden state for default rnn agent
+attn_embed_dim: 128
+attn_n_heads: 4
+alloc_embed_dim: 128
+alloc_n_heads: 4
+obs_agent_id: True # Include the agent's one_hot id in the observation
+obs_last_action: True # Include the agent's last action (one_hot) in the observation
+# --- Mixing/Hypernet parameters ---
+softmax_mixing_weights: False
+mixer_subtask_cond: # method by which we provide subtask information to the mixer. defaults to value of agent.subtask_cond
+
+training_iters: 1
